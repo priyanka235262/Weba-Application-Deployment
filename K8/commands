@@ -1,1 +1,37 @@
+#k8 commands
 
+kubectl logs: in order to view the logs
+kubectl get pods: To check the no of pods
+kubectl apply -f deployment.yaml(manifest file): In order to deploy the manifest file
+kubectl apply -f service.yaml(service manifest file): In order to create service.yaml
+kubectl get svc: To get the service IP address 
+kubectl describe pod <pod-name>: In order to view the pod details
+
+
+In order to view the application we will have to run: kubectl get svc : we will get an ip address we will have to have access to that application along with the node port IP address.
+The command kubectl get svc (or kubectl get services) is used in Kubernetes to list all the Services in a given namespace. Services in Kubernetes are an abstraction that define a logical set of Pods and a policy by which to access them. They provide a stable endpoint for accessing Pods, even if the Pods themselves are restarted or replaced.
+
+Here's a breakdown of what you'll see when you run this command and what the columns mean:
+
+Output Columns:
+
+NAME: The name of the Service.
+TYPE: The type of Service. Common types include:
+ClusterIP: Exposes the Service on an internal IP in the cluster. This makes the Service only reachable from within the cluster. This is the default type.
+NodePort: Exposes the Service on each Node's IP at a static port (the NodePort). A ClusterIP Service is automatically created as well. You can access the Service from outside the cluster using <NodeIP>:<NodePort>.
+LoadBalancer: Exposes the Service externally using a cloud provider's load balancer.1 NodePort and ClusterIP Services are automatically created as well. This is typically used in cloud environments.   
+
+ExternalName: Maps the Service to the contents of the externalName field (e.g., a DNS name). No selector is defined, and no Pods are created.
+CLUSTER-IP: The internal IP address assigned to the Service. This is used for communication within the cluster. For ExternalName Services, this column will be <none>.
+EXTERNAL-IP: The external IP address assigned to the Service (if applicable). This is relevant for LoadBalancer and sometimes NodePort Services. For ClusterIP Services, this will be <none>. For LoadBalancer Services, this IP is usually provisioned by the cloud provider.
+PORT(S): The port(s) exposed by the Service. This shows the port on the Service and the target port on the Pods. For example, 80:8080/TCP means the Service exposes port 80, which forwards traffic to port 8080 on the Pods using the TCP protocol. Multiple ports can be listed, separated by commas.
+AGE: How long the Service has been running.
+SELECTOR: The label selector used by the Service to select Pods. This determines which Pods are part of the Service. If no selector is defined (like in ExternalName Services), this will be <none>
+
+The command kubectl get svc (or kubectl get services) is used in Kubernetes to list all the Services in a given namespace. Services in Kubernetes are an abstraction that define a logical set of Pods and a policy by which to access them. They provide a stable endpoint for accessing Pods, even if the Pods themselves are restarted or replaced.
+
+Look for the EXTERNAL-IP column. Once an IP is assigned (it might take a few minutes), you can access your application using that IP and the port specified in the PORT(S) column.
+
+NAME         TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+my-web-app   LoadBalancer   10.108.10.20   34.123.45.67  80:8080/TCP    1d
+In this example, you would access the application at http://34.123.45.67 (or http://34.123.45.67:80 if the port is explicitly needed).

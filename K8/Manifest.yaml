@@ -1,0 +1,69 @@
+After the Dockerfile is created it will create an docker image and we need to run the image as a container as container is a running instnace of an image.from there we will create a k8 deployment file
+
+apiVersion: v1/Apps
+kind: deployment
+metadata:
+  name: my-app
+  namespace: default
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+       app: my-app
+    template:
+      metadata:
+        labels:
+          app: my-app
+    spec:
+      container:
+       - name: my-flask-app-container
+         image: my-repository/my-flask-app-container
+         ports:
+          - containerPorts: 5000
+          resources:
+            requests:
+              cpu: 100m
+              memory: 200Mi
+            limit : 
+              cpu: 200m
+              memory : 300 Mi
+            livenessProbe:
+              httpGet:
+                path: /health
+                port: 5000
+              initialDelaySeconds : 6
+              periodSeconds: 10
+            readinessProbe:
+              httpGet:
+                path: /health
+                port: 5000
+              initialDelaySeconds : 6
+              periodSeconds: 10
+              env:
+                -name: FLASK_ENV
+                 value = "Production"
+                -name: DATABASE_URL
+                 valueFrom:
+                   secretRefKey: 
+                     name: db-secrets
+                     key: url
+
+---
+apiVersion: v1
+kind: service
+metadata:
+ name: my-flask-app-service
+ namespace: default
+spec:
+ selector:
+   app: my-flask-app
+ports:
+ - protocol : TCP
+   port: 80
+   targetPort: 5000
+  type : LoadBalancer
+  
+    
+              
+            
+       
